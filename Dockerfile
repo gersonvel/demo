@@ -20,4 +20,4 @@ EXPOSE 8085
 
 # Comando para ejecutar la aplicación
 # Agregamos parámetros para optimizar la RAM en planes gratuitos
-ENTRYPOINT ["java", "-Xmx400m", "-Xms256m", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "-Xmx400m", "-jar", "app.jar"]
