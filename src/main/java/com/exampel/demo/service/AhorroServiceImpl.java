@@ -48,4 +48,26 @@ public class AhorroServiceImpl implements AhorroService {
                 .orElseThrow(() -> new RuntimeException("No encontrado"));
         repository.delete(ahorro);
     }
+
+    @Override
+    public Ahorro actualizarMetaCompleta(Long id, Ahorro datosNuevos, Long userId) {
+        // 1. Buscamos la meta existente asegurándonos que pertenezca al usuario
+        Ahorro ahorro = repository.findById(id)
+                .filter(a -> a.getUser().getId().equals(userId))
+                .orElseThrow(() -> new RuntimeException("Meta de ahorro no encontrada o no autorizada"));
+
+        // 2. Actualizamos solo los campos descriptivos y la meta final
+        ahorro.setName(datosNuevos.getName());
+        ahorro.setTargetAmount(datosNuevos.getTargetAmount());
+        ahorro.setIcon(datosNuevos.getIcon());
+        ahorro.setColor(datosNuevos.getColor());
+        ahorro.setDeadline(datosNuevos.getDeadline());
+
+        // Nota: El currentAmount (lo ahorrado) normalmente se mantiene igual
+        // a menos que también quieras permitir editarlo desde el modal principal.
+        // ahorro.setCurrentAmount(datosNuevos.getCurrentAmount());
+
+        // 3. Guardamos los cambios
+        return repository.save(ahorro);
+    }
 }

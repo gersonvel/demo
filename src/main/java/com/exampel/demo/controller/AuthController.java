@@ -36,15 +36,31 @@ public class AuthController {
     // }
     // }
 
+    // @PostMapping("/login")
+    // public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
+    // try {
+    // Map<String, String> tokens = authService.login(request.get("email"),
+    // request.get("password"));
+
+    // // Lo metemos en el "data" (el cuarto parámetro) de tu ResponseDTO
+    // ResponseDTO success = new ResponseDTO(200, false, "Login exitoso", tokens);
+    // return ResponseEntity.ok(success);
+    // } catch (RuntimeException e) {
+    // ResponseDTO error = new ResponseDTO(401, true, e.getMessage(), null);
+    // return ResponseEntity.status(401).body(error);
+    // }
+    // }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
         try {
-            Map<String, String> tokens = authService.login(request.get("email"),
+            // Ahora 'data' contiene tokens Y el objeto usuario
+            Map<String, Object> data = authService.login(request.get("email"),
                     request.get("password"));
 
-            // Lo metemos en el "data" (el cuarto parámetro) de tu ResponseDTO
-            ResponseDTO success = new ResponseDTO(200, false, "Login exitoso", tokens);
+            ResponseDTO success = new ResponseDTO(200, false, "Login exitoso", data);
             return ResponseEntity.ok(success);
+
         } catch (RuntimeException e) {
             ResponseDTO error = new ResponseDTO(401, true, e.getMessage(), null);
             return ResponseEntity.status(401).body(error);

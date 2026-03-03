@@ -3,6 +3,9 @@ package com.exampel.demo.controller;
 import com.exampel.demo.dto.ResponseDTO;
 import com.exampel.demo.model.Gasto;
 import com.exampel.demo.service.GastoService;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +19,26 @@ public class GastoController {
     @Autowired
     private GastoService gastoService;
 
+    // @GetMapping("/usuario/{userId}")
+    // public ResponseEntity<ResponseDTO> listar(@PathVariable Long userId) {
+    // return ResponseEntity.ok(new ResponseDTO(
+    // HttpStatus.OK.value(),
+    // false,
+    // "Gastos obtenidos",
+    // gastoService.listarPorUsuario(userId)));
+    // }
+
     @GetMapping("/usuario/{userId}")
-    public ResponseEntity<ResponseDTO> listar(@PathVariable Long userId) {
+    public ResponseEntity<ResponseDTO> listar(
+            @PathVariable Long userId,
+            @RequestParam(required = false) String categoria // Parametro opcional
+    ) {
         return ResponseEntity.ok(new ResponseDTO(
                 HttpStatus.OK.value(),
                 false,
                 "Gastos obtenidos",
-                gastoService.listarPorUsuario(userId)));
+                gastoService.listarPorUsuario(userId, categoria) // Pasamos la categoria
+        ));
     }
 
     @GetMapping("/{id}/usuario/{userId}")
@@ -101,5 +117,39 @@ public class GastoController {
                 false,
                 "Gastos del día " + dia + "/" + mes + "/" + anio + " obtenidos",
                 gastoService.listarPorFechaExacta(userId, dia, mes, anio)));
+    }
+
+    @GetMapping("/usuario/{userId}/mes")
+    public ResponseEntity<ResponseDTO> listarPorMes(
+            @PathVariable Long userId,
+            @RequestParam int mes,
+            @RequestParam int anio,
+            @RequestParam(required = false) String categoria) {
+
+        List<Gasto> lista = gastoService.listarPorMes(userId, mes, anio, categoria);
+
+        return ResponseEntity.ok(new ResponseDTO(
+                200,
+                false,
+                "Gastos del periodo " + mes + "/" + anio + " obtenidos",
+                lista));
+    }
+
+    @DeleteMapping("/{id}/usuario/{userId}")
+    public ResponseEntity<ResponseDTO> eliminar(@PathVariable Long id, @PathVariable Long userId) {
+        try {
+            gastoService.eliminar(id, userId);
+            return ResponseEntity.ok(new ResponseDTO(
+                    200,
+                    false,
+                    "Gasto eliminado correctamente",
+                    null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseDTO(
+                    404,
+                    true,
+                    "Error al eliminar: " + e.getMessage(),
+                    null));
+        }
     }
 }

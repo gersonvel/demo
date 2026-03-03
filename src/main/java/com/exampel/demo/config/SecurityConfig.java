@@ -31,7 +31,17 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // Deshabilitamos porque Next.js usará JWT, no cookies de sesión clásicas
                 .cors(Customizer.withDefaults()) // Permite que Next.js se conecte
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            // Forzamos 401 en lugar del 403 por defecto
+                            response.setStatus(401);
+                            response.setContentType("application/json");
+                            response.getWriter().write(
+                                    "{\"error\": true, \"message\": \"No autorizado: Token inválido o expirado\"}");
+                        }))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() // <--- ESTO ES
+                                                                                                         // CLAVE
                         .requestMatchers("/api/auth/**", "/api/user/**").permitAll() // Deja que cualquiera entre al
                                                                                      // login/registro
                         .anyRequest().authenticated() // Bloquea todo lo demás si no hay token
@@ -47,7 +57,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000/"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
         // Métodos HTTP permitidos:
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));

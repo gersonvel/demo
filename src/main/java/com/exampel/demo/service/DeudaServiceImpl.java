@@ -68,17 +68,54 @@ public class DeudaServiceImpl implements DeudaService {
         deudaRepository.delete(deuda);
     }
 
+    // @Override
+    // public Deuda actualizar(Long id, Deuda detalles, Long userId) {
+    // Deuda existente = deudaRepository.findById(id)
+    // .filter(d -> d.getUser().getId().equals(userId))
+    // .orElseThrow(() -> new RuntimeException("Deuda no encontrada"));
+
+    // existente.setName(detalles.getName());
+    // existente.setTotalAmount(detalles.getTotalAmount());
+    // existente.setBalance(detalles.getBalance());
+    // existente.setMonthlyPayment(detalles.getMonthlyPayment());
+    // existente.setDueDateDay(detalles.getDueDateDay());
+
+    // return deudaRepository.save(existente);
+    // }
+
     @Override
+    @Transactional
     public Deuda actualizar(Long id, Deuda detalles, Long userId) {
         Deuda existente = deudaRepository.findById(id)
                 .filter(d -> d.getUser().getId().equals(userId))
                 .orElseThrow(() -> new RuntimeException("Deuda no encontrada"));
 
+        // 1. Lógica de ajuste de Balance si el TotalAmount cambió
+        // Si el total que viene del front es distinto al que tenemos en BD...
+        if (detalles.getTotalAmount() != null &&
+                detalles.getTotalAmount().compareTo(existente.getTotalAmount()) != 0) {
+
+            // Calculamos lo que el usuario ya pagó (Histórico)
+            BigDecimal pagadoHastaAhora = existente.getTotalAmount().subtract(existente.getBalance());
+
+            // El nuevo balance es el nuevo total menos lo que ya pagó
+            BigDecimal nuevoBalance = detalles.getTotalAmount().subtract(pagadoHastaAhora);
+
+            // Validación: No puede poner un total menor a lo que ya pagó
+            if (nuevoBalance.compareTo(BigDecimal.ZERO) < 0) {
+                throw new RuntimeException(
+                        "No puedes reducir el total por debajo de lo ya pagado ($" + pagadoHastaAhora + ")");
+            }
+
+            existente.setTotalAmount(detalles.getTotalAmount());
+            existente.setBalance(nuevoBalance);
+        }
+
+        // 2. Actualizar el resto de campos normales
         existente.setName(detalles.getName());
-        existente.setTotalAmount(detalles.getTotalAmount());
-        existente.setBalance(detalles.getBalance());
         existente.setMonthlyPayment(detalles.getMonthlyPayment());
         existente.setDueDateDay(detalles.getDueDateDay());
+        // El startDate y otros campos si los necesitas
 
         return deudaRepository.save(existente);
     }
@@ -98,7 +135,7 @@ public class DeudaServiceImpl implements DeudaService {
                     // Si no existe, la creamos de una vez
                     Categoria nuevaCat = new Categoria();
                     nuevaCat.setName("Pago de Deuda");
-                    nuevaCat.setIcon("CreditCardIcon"); // Icono por defecto
+                    nuevaCat.setIcon("💸"); // Icono por defecto
                     nuevaCat.setColor("#FF4500"); // Color distintivo
                     nuevaCat.setUser(deuda.getUser());
                     return categoriaRepository.save(nuevaCat);
@@ -138,4 +175,5 @@ public class DeudaServiceImpl implements DeudaService {
 
         return pagoDeudaRepository.findByDeudaIdOrderByDateDesc(deudaId);
     }
+
 }

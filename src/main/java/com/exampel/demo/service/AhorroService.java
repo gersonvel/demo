@@ -13,4 +13,6 @@ public interface AhorroService {
     Ahorro actualizarSaldo(Long id, BigDecimal montoNuevo, Long userId);
 
     void eliminar(Long id, Long userId);
+
+    public Ahorro actualizarMetaCompleta(Long id, Ahorro datosNuevos, Long userId);
 }

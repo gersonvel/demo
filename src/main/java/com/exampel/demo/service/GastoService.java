@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 
 public interface GastoService {
-    List<Gasto> listarPorUsuario(Long userId);
+    List<Gasto> listarPorUsuario(Long userId, String categoria);
 
     Gasto obtenerPorId(Long id, Long userId);
 
@@ -23,4 +23,6 @@ public interface GastoService {
     Page<Gasto> listarPaginado(Long userId, int page, int size);
 
     List<Gasto> listarPorFechaExacta(Long userId, int dia, int mes, int anio);
+
+    public List<Gasto> listarPorMes(Long userId, int mes, int anio, String categoria);
 }

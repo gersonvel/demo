@@ -26,8 +26,25 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private RefreshTokenService refreshTokenService;
 
+    // @Override
+    // public Map<String, String> login(String email, String password) {
+    // Usuario usuario = usuarioRepository.findByEmail(email)
+    // .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+    // if (!passwordEncoder.matches(password, usuario.getPassword())) {
+    // throw new RuntimeException("Contraseña incorrecta");
+    // }
+
+    // String accessToken = jwtUtils.generateToken(email);
+    // RefreshToken refreshToken = refreshTokenService.createRefreshToken(email);
+
+    // return Map.of(
+    // "accessToken", accessToken,
+    // "refreshToken", refreshToken.getToken());
+    // }
+
     @Override
-    public Map<String, String> login(String email, String password) {
+    public Map<String, Object> login(String email, String password) { // Cambiamos a Object
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
@@ -38,9 +55,15 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtUtils.generateToken(email);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(email);
 
+        // Limpiamos el password por seguridad antes de mandarlo al mapa
+        usuario.setPassword(null);
+
+        // Usamos Map.of para crear el diccionario de respuesta
         return Map.of(
                 "accessToken", accessToken,
-                "refreshToken", refreshToken.getToken());
+                "refreshToken", refreshToken.getToken(),
+                "user", usuario // Agregamos el objeto completo
+        );
     }
 
     @Override

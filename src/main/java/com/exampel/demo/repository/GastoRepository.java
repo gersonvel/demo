@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.exampel.demo.dto.GastoResumenDTO;
@@ -68,4 +69,16 @@ public interface GastoRepository extends JpaRepository<Gasto, Long> {
             "AND YEAR(g.date) = :anio " +
             "ORDER BY g.date DESC")
     List<Gasto> findByUserIdAndDate(Long userId, int dia, int mes, int anio);
+
+    List<Gasto> findByUserIdAndCategoryNameIgnoreCase(Long userId, String categoryName);
+
+    @Query("SELECT g FROM Gasto g WHERE g.user.id = :userId " +
+            "AND MONTH(g.date) = :mes " +
+            "AND YEAR(g.date) = :anio " +
+            "AND (cast(:categoria as string) IS NULL OR LOWER(g.category.name) = LOWER(cast(:categoria as string)))")
+    List<Gasto> findByMesAnioYCategoria(
+            @Param("userId") Long userId,
+            @Param("mes") int mes,
+            @Param("anio") int anio,
+            @Param("categoria") String categoria);
 }

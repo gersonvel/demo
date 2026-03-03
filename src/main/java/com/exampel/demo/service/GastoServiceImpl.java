@@ -24,9 +24,20 @@ public class GastoServiceImpl implements GastoService {
     @Autowired
     private CategoriaService categoriaService; // Para validar la categoría
 
+    // @Override
+    // @Transactional(readOnly = true)
+    // public List<Gasto> listarPorUsuario(Long userId) {
+    // return gastoRepository.findByUserId(userId);
+    // }
+
     @Override
     @Transactional(readOnly = true)
-    public List<Gasto> listarPorUsuario(Long userId) {
+    public List<Gasto> listarPorUsuario(Long userId, String categoria) {
+        if (categoria != null && !categoria.isEmpty()) {
+            // Buscamos por usuario Y nombre de categoría
+            return gastoRepository.findByUserIdAndCategoryNameIgnoreCase(userId, categoria);
+        }
+        // Si no hay categoría, devolvemos todo como antes
         return gastoRepository.findByUserId(userId);
     }
 
@@ -96,5 +107,13 @@ public class GastoServiceImpl implements GastoService {
     @Override
     public List<Gasto> listarPorFechaExacta(Long userId, int dia, int mes, int anio) {
         return gastoRepository.findByUserIdAndDate(userId, dia, mes, anio);
+    }
+
+    @Override
+    public List<Gasto> listarPorMes(Long userId, int mes, int anio, String categoria) {
+        // Si la categoría viene vacía desde el Front, la tratamos como null para el
+        // Query
+        String catFiltro = (categoria != null && !categoria.isEmpty()) ? categoria : null;
+        return gastoRepository.findByMesAnioYCategoria(userId, mes, anio, catFiltro);
     }
 }

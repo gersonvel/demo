@@ -70,4 +70,15 @@ public class AhorroController {
                     null));
         }
     }
+
+    @PostMapping("/actualizar/{id}/usuario/{userId}")
+    public ResponseEntity<ResponseDTO> actualizarMeta(
+            @PathVariable Long id,
+            @PathVariable Long userId,
+            @RequestBody Ahorro ahorroActualizado) {
+
+        // El service debe buscar el ahorro existente y hacer el set de los campos
+        return ResponseEntity.ok(new ResponseDTO(200, false, "Meta actualizada",
+                service.actualizarMetaCompleta(id, ahorroActualizado, userId)));
+    }
 }
