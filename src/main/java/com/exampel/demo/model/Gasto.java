@@ -41,4 +41,8 @@ public class Gasto {
     @ManyToOne
     @JoinColumn(name = "deuda_id")
     private Deuda relatedDebt;
+
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "deuda_id")
+    // private Deuda deuda;
 }

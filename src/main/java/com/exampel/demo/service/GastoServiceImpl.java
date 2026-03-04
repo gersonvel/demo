@@ -1,8 +1,10 @@
 package com.exampel.demo.service;
 
 import com.exampel.demo.dto.GastoResumenDTO;
+import com.exampel.demo.model.Deuda;
 import com.exampel.demo.model.Gasto;
 import com.exampel.demo.model.Usuario;
+import com.exampel.demo.repository.DeudaRepository;
 import com.exampel.demo.repository.GastoRepository;
 import com.exampel.demo.service.CategoriaService;
 import com.exampel.demo.service.GastoService;
@@ -23,6 +25,9 @@ public class GastoServiceImpl implements GastoService {
 
     @Autowired
     private CategoriaService categoriaService; // Para validar la categoría
+
+    @Autowired
+    private DeudaRepository deudaRepository;
 
     // @Override
     // @Transactional(readOnly = true)
@@ -49,16 +54,43 @@ public class GastoServiceImpl implements GastoService {
                 .orElseThrow(() -> new RuntimeException("Gasto no encontrado o no tienes permisos para verlo"));
     }
 
+    // @Override
+    // @Transactional
+    // public Gasto guardar(Gasto gasto, Long userId) {
+    // // 1. Validar que la categoría que viene en el JSON exista y sea del usuario
+    // categoriaService.buscarPorId(gasto.getCategory().getId(), userId);
+
+    // // 2. Asignar el usuario al gasto
+    // Usuario user = new Usuario();
+    // user.setId(userId);
+    // gasto.setUser(user);
+
+    // return gastoRepository.save(gasto);
+    // }
+
     @Override
     @Transactional
     public Gasto guardar(Gasto gasto, Long userId) {
-        // 1. Validar que la categoría que viene en el JSON exista y sea del usuario
+        // 1. Validar categoría
         categoriaService.buscarPorId(gasto.getCategory().getId(), userId);
 
-        // 2. Asignar el usuario al gasto
+        // 2. Asignar usuario
         Usuario user = new Usuario();
         user.setId(userId);
         gasto.setUser(user);
+
+        // --- NUEVA LÓGICA DE TARJETA ---
+        if (gasto.getRelatedDebt() != null && gasto.getRelatedDebt().getId() != null) {
+            Deuda deuda = deudaRepository.findById(gasto.getRelatedDebt().getId())
+                    .filter(d -> d.getUser().getId().equals(userId))
+                    .orElseThrow(() -> new RuntimeException("Tarjeta/Deuda no encontrada"));
+
+            // Al comprar con tarjeta, el balance (lo que debes) AUMENTA
+            deuda.setBalance(deuda.getBalance().add(gasto.getAmount()));
+            deuda.setMonthlyPayment(deuda.getBalance());
+            deudaRepository.save(deuda);
+            gasto.setRelatedDebt(deuda);
+        }
 
         return gastoRepository.save(gasto);
     }

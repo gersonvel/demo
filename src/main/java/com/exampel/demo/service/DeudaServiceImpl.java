@@ -154,14 +154,15 @@ public class DeudaServiceImpl implements DeudaService {
         PagoDeuda pagoGuardado = pagoDeudaRepository.save(pago);
 
         // 5. REGISTRAR COMO GASTO AUTOMÁTICAMENTE
-        Gasto gastoDeuda = new Gasto();
-        gastoDeuda.setAmount(monto);
-        gastoDeuda.setDate(LocalDate.now());
-        gastoDeuda.setDescription("Abono a: " + deuda.getName() + " - " + nota);
-        gastoDeuda.setUser(deuda.getUser());
-        gastoDeuda.setCategory(catDeuda); // Usamos la categoría que encontramos o creamos
+        // Gasto gastoDeuda = new Gasto();
+        // gastoDeuda.setAmount(monto);
+        // gastoDeuda.setDate(LocalDate.now());
+        // gastoDeuda.setDescription("Abono a: " + deuda.getName() + " - " + nota);
+        // gastoDeuda.setUser(deuda.getUser());
+        // gastoDeuda.setCategory(catDeuda); // Usamos la categoría que encontramos o
+        // creamos
 
-        gastoRepository.save(gastoDeuda);
+        // gastoRepository.save(gastoDeuda);
 
         return pagoGuardado;
     }
