@@ -10,6 +10,6 @@ public class PruebaController {
 
     @GetMapping("/hola")
     public String saludo() {
-        return "¡Hola! Si puedes ver esto es porque tu token es válido.";
+        return "¡Hola! Probando Api.";
     }
 }

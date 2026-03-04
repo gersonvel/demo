@@ -42,8 +42,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() // <--- ESTO ES
                                                                                                          // CLAVE
-                        .requestMatchers("/api/auth/**", "/api/user/**").permitAll() // Deja que cualquiera entre al
-                                                                                     // login/registro
+                        .requestMatchers("/api/auth/**", "/api/user/**", "/api/test/**").permitAll() // Deja que
+                                                                                                     // cualquiera entre
+                                                                                                     // al
+                        // login/registro
                         .anyRequest().authenticated() // Bloquea todo lo demás si no hay token
                 )
                 // Esto es vital: le dice a Spring que no guarde estados (Sessions), cada
