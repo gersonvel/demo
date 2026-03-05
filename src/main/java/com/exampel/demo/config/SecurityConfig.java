@@ -60,7 +60,8 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(
-                Arrays.asList("http://localhost:3000", "https://demo-front-git-main-gersonvels-projects.vercel.app"));
+                Arrays.asList("http://localhost:3000", "https://demo-front-git-main-gersonvels-projects.vercel.app",
+                        "https://demo-front-orcin.vercel.app"));
         // Métodos HTTP permitidos:
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
