@@ -65,7 +65,7 @@ public class AhorroServiceImpl implements AhorroService {
 
         // Nota: El currentAmount (lo ahorrado) normalmente se mantiene igual
         // a menos que también quieras permitir editarlo desde el modal principal.
-        // ahorro.setCurrentAmount(datosNuevos.getCurrentAmount());
+        ahorro.setCurrentAmount(datosNuevos.getCurrentAmount());
 
         // 3. Guardamos los cambios
         return repository.save(ahorro);
