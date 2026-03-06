@@ -1,7 +1,6 @@
 package com.exampel.demo.repository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -21,7 +20,7 @@ public interface GastoRepository extends JpaRepository<Gasto, Long> {
 
         // 1. Para filtrar gastos por un rango de fechas (útil para el balance del mes
         // actual)
-        List<Gasto> findByUserIdAndDateBetween(Long userId, LocalDateTime start, LocalDateTime end);
+        List<Gasto> findByUserIdAndDateBetween(Long userId, LocalDate start, LocalDate end);
 
         // 2. Para la gráfica de pastel (lo que ya tenías, pero con DTO es mejor)
         @Query("SELECT g.category.name AS rubro, SUM(g.amount) AS total " +
