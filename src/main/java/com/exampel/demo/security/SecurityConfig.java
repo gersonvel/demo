@@ -1,4 +1,4 @@
-package com.exampel.demo.config;
+package com.exampel.demo.security;
 
 import java.util.Arrays;
 
@@ -16,8 +16,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import com.exampel.demo.security.JwtAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -40,8 +38,7 @@ public class SecurityConfig {
                                     "{\"error\": true, \"message\": \"No autorizado: Token inválido o expirado\"}");
                         }))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() // <--- ESTO ES
-                                                                                                         // CLAVE
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**", "/api/user/**", "/api/test/**").permitAll() // Deja que
                                                                                                      // cualquiera entre
                                                                                                      // al
