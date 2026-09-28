@@ -1,5 +1,6 @@
 package com.exampel.demo.repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -81,4 +82,7 @@ public interface GastoRepository extends JpaRepository<Gasto, Long> {
                         @Param("mes") int mes,
                         @Param("anio") int anio,
                         @Param("categoria") String categoria);
+
+        @Query("SELECT COALESCE(SUM(g.amount), 0) FROM Gasto g WHERE g.user.id = :userId")
+        BigDecimal sumTotalGastosHistoricos(@Param("userId") Long userId);
 }

@@ -53,12 +53,15 @@ public class DashboardServiceImpl implements DashboardService {
                                 .map(GastoResumenDTO::getTotal)
                                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+                BigDecimal totalGastosHistoricos = gastoRepository.sumTotalGastosHistoricos(userId);
+
                 return new DashboardDTO(
                                 totalAhorrado,
                                 totalDeuda,
                                 totalAhorrado.subtract(totalDeuda),
                                 gastosMesActual,
-                                gastosPorCat);
+                                gastosPorCat,
+                                totalGastosHistoricos);
         }
 
         @Override
@@ -91,7 +94,8 @@ public class DashboardServiceImpl implements DashboardService {
                                 totalDeuda,
                                 totalAhorrado.subtract(totalDeuda),
                                 gastosMesSeleccionado,
-                                gastosPorCat);
+                                gastosPorCat,
+                                gastoRepository.sumTotalGastosHistoricos(userId));
         }
 
         @Override
@@ -122,6 +126,7 @@ public class DashboardServiceImpl implements DashboardService {
                                 totalDeuda,
                                 totalAhorrado.subtract(totalDeuda),
                                 totalDelDia,
-                                gastosPorCat);
+                                gastosPorCat,
+                                gastoRepository.sumTotalGastosHistoricos(userId));
         }
 }
